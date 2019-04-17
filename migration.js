@@ -23,6 +23,7 @@ db.serialize(() => {
         'tacos_pescado INTEGER NOT NULL, ' +
         'tacos_camaron INTEGER NOT NULL, ' +
         'bebidas INTEGER NOT NULL, ' +
+        'total INTEGER NOT NULL, ' +
         'cashier_id INTEGER NOT NULL, ' +
         'FOREIGN KEY(cashier_id) REFERENCES Cashier(id)' +
         ')';

@@ -10,15 +10,16 @@ purchaseRouter.post('/', (req, res, next) => {
 
   const sql = 'INSERT INTO Purchase ' +
               '(date, tacos_pescado, tacos_camaron, ' +
-              'bebidas, cashier_id) ' +
+              'bebidas, cashier_id, total) ' +
               'VALUES ($date, $tacosPescado, $tacosCamaron, ' +
-              '$bebidas, $cashierId)';
+              '$bebidas, $cashierId, $total)';
   const values = {
     $date: purchase.date,
     $tacosPescado: purchase.tacosPescado,
     $tacosCamaron: purchase.tacosCamaron,
     $bebidas: purchase.bebidas,
-    $cashierId: purchase.cashier
+    $cashierId: purchase.cashier,
+    $total: purchase.total
   };
 
   db.run(sql, values, function(err) {
@@ -27,11 +28,20 @@ purchaseRouter.post('/', (req, res, next) => {
     db.get(`SELECT * FROM Purchase WHERE id=${this.lastID}`, (err, row) => {
       if (err) throw err;
 
-      console.log(row);
       res.status(201).send({purchase: row});
     });
   });
 
+});
+
+purchaseRouter.get('/', (req, res, next) => {
+  const sql = 'SELECT * FROM Purchase';
+
+  db.all(sql, (err, rows) => {
+    if (err) throw err;
+
+    res.status(200).send({sales: rows});
+  });
 });
 
 module.exports = purchaseRouter;
