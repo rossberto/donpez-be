@@ -11,9 +11,21 @@ const errorhandler = require('errorhandler');
 
 const apiRouter = require('./api/api');
 
+/*
+var cookieParser = require('cookie-parser');
+var session = require('session');
+var flash = require('connect-flash');
+*/
+
 app.use(bodyParser.json());
 app.use(cors());
 app.use(errorhandler());
+
+/*
+app.use(cookieParser('keyboard cat'));
+app.use(express.session({ cookie: { maxAge: 60000 }}));
+app.use(flash());
+*/
 
 app.use('/api', apiRouter);
 
