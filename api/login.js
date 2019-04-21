@@ -5,6 +5,8 @@ const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE ||
                                 './database.sqlite');
 
+const aux = require('./aux.js');
+
 var rtg = require('random-token-generator');
 
 function checkUserData(req, res, next) {
@@ -47,7 +49,7 @@ function registerLogin(req, res, next) {
               '($loginDate, $accessType, $userId, $token)';
   const date = new Date();
   const values = {
-    $loginDate: JSON.stringify(date),
+    $loginDate: `${date}`,
     $accessType: req.user.user_type,
     $userId: req.user.id,
     $token: req.token
@@ -68,5 +70,45 @@ function registerLogin(req, res, next) {
 loginRouter.post('/', checkUserData, generateToken, registerLogin, (req, res, next) => {
   res.status(201).send(res.access);
 });
+
+loginRouter.put('/', aux.getToken, aux.validateToken, (req, res, next) => {
+  date = new Date();
+  let sql = 'UPDATE AccessLog ' +
+              `SET logout_date = $date, active_session = 0 ` +
+              'WHERE id = $id';
+  values = {
+    $date: `${date}`,
+    $id: req.accessId
+  };
+
+  db.run(sql, values, (err) => {
+    if (err) throw err;
+
+    sql = 'SELECT * FROM AccessLog WHERE id=$id';
+    db.get(sql, {$id: req.accessId}, (err, accessLog) => {
+      if (err) throw err;
+
+      console.log(accessLog);
+
+      res.status(200).send({logout: 'completed'});
+    });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = loginRouter;

@@ -5,7 +5,9 @@ const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE ||
                                 './database.sqlite');
 
-purchaseRouter.post('/', (req, res, next) => {
+const aux = require('./aux.js');
+
+purchaseRouter.post('/', aux.getToken, aux.validateToken, (req, res, next) => {
   const purchase = req.body.purchase;
 
   const sql = 'INSERT INTO Purchase ' +
@@ -19,7 +21,7 @@ purchaseRouter.post('/', (req, res, next) => {
     $tacosCamaron: purchase.tacosCamaron,
     $bebidas: purchase.bebidas,
     $total: purchase.total,
-    $userId: 'usuarioforzado'
+    $userId: req.userId
   };
 
   db.run(sql, values, function(err) {
