@@ -36,7 +36,16 @@ function validateToken(req, res, next) {
   });
 }
 
+function validateAdmin(req, res, next) {
+  if (req.accessType === 'Administrador') {
+    next();
+  } else {
+    res.status(401).send();
+  }
+}
+
 module.exports = {
   getToken,
-  validateToken
+  validateToken,
+  validateAdmin
 };

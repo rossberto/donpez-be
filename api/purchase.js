@@ -7,7 +7,9 @@ const db = new sqlite3.Database(process.env.TEST_DATABASE ||
 
 const aux = require('./aux.js');
 
-purchaseRouter.post('/', aux.getToken, aux.validateToken, (req, res, next) => {
+purchaseRouter.use('/', aux.getToken, aux.validateToken);
+
+purchaseRouter.post('/', (req, res, next) => {
   const purchase = req.body.purchase;
 
   const sql = 'INSERT INTO Purchase ' +
@@ -36,8 +38,13 @@ purchaseRouter.post('/', aux.getToken, aux.validateToken, (req, res, next) => {
 
 });
 
-purchaseRouter.get('/', aux.getToken, aux.validateToken, (req, res, next) => {
-  if (req.accessType === 'Administrador') {
+/****************************************/
+/*** Next routes require admin access ***/
+/****************************************/
+purchaseRouter.use('/', aux.validateAdmin);
+
+purchaseRouter.get('/', (req, res, next) => {
+  //if (req.accessType === 'Administrador') {
     const sql = 'SELECT * FROM Purchase';
 
     db.all(sql, (err, rows) => {
@@ -45,9 +52,49 @@ purchaseRouter.get('/', aux.getToken, aux.validateToken, (req, res, next) => {
 
       res.status(200).send({sales: rows});
     });
-  } else {
+  /*} else {
     res.status(401).send();
-  }
+  }*/
 });
+
+purchaseRouter.param('id', (req, res, next, id) => {
+  const sql = `SELECT * FROM Purchase WHERE id=${id}`;
+  db.get(sql, (err, purchase) => {
+    if (err) throw err;
+
+    if (purchase) {
+      req.purchaseId = id;
+      next();
+    } else {
+      res.status(404).send();
+    }
+  });
+});
+
+purchaseRouter.delete('/:id', (req, res, next) => {
+  const sql = 'DELETE FROM Purchase '+
+              'WHERE id=$id';
+  db.run(sql,{$id: req.purchaseId}, err => {
+    if (err) throw err;
+
+    res.status(204).send();
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = purchaseRouter;
