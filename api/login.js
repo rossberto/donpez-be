@@ -1,57 +1,72 @@
 const express = require('express');
 const loginRouter = express.Router();
 
+const sqlite3 = require('sqlite3');
+const db = new sqlite3.Database(process.env.TEST_DATABASE ||
+                                './database.sqlite');
+
 var rtg = require('random-token-generator');
-
-const admin = {
-  username: 'ross',
-  password: 'contrasena',
-  type: 'admin'
-}
-
-const cashier = {
-  username: 'cajero',
-  password: 'test',
-  type: 'cashier'
-}
-
-const users = [admin, cashier];
-let token = '';
 
 function checkUserData(req, res, next) {
   const userdata = req.headers.authorization.split('&');
-  const user = userdata[0];
+  const username = userdata[0];
   const pwd = userdata[1];
 
-  users.map(employee => {
-    if (employee.username === user &&
-        employee.password === pwd) {
-      res.userType = employee.type;
-      next();
+  const sql = `SELECT * FROM User WHERE username="${username}"`;
+  db.get(sql, (err, user) => {
+    if (err) throw err;
+
+    if (user) {
+      if (user.password === pwd) {
+        req.user = user;
+        next();
+      } else {
+        res.status(401).send();
+      }
     } else {
-      return;
+      res.status(404).send();
     }
   });
-
-  res.status(404).send();
 }
 
-loginRouter.post('/', checkUserData, (req, res, next) => {
+function generateToken(req, res, next) {
   rtg.generateKey({
       len: 16, // Generate 16 characters or bytes of data
       string: true, // Output keys as a hex string
       strong: false, // Use the crypographically secure randomBytes function
       retry: false // Retry once on error
-  }, function(err, key) {
-      token = key;
-      const userType = res.userType;
-      console.log(token);
-      console.log(res.userType);
-      res.status(201).send({
-        token: token,
-        userType: userType
-      });
+  }, (err, key) => {
+      req.token = key;
+      next();
   });
+}
+
+function registerLogin(req, res, next) {
+  let sql = 'INSERT INTO AccessLog ' +
+              '(login_date, access_type, user_id, token) VALUES ' +
+              '($loginDate, $accessType, $userId, $token)';
+  const date = new Date();
+  const values = {
+    $loginDate: JSON.stringify(date),
+    $accessType: req.user.user_type,
+    $userId: req.user.id,
+    $token: req.token
+  };
+  db.run(sql, values, function(err) {
+    if (err) throw err;
+
+    sql = `SELECT * FROM AccessLog WHERE id=${this.lastID}`;
+    db.get(sql, (err, access) => {
+      if (err) throw err;
+
+      res.access = access;
+      next();
+    });
+  });
+}
+
+loginRouter.post('/', checkUserData, generateToken, registerLogin, (req, res, next) => {
+  res.status(201).send(res.access);
 });
 
 module.exports = loginRouter;
