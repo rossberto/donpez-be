@@ -36,14 +36,18 @@ purchaseRouter.post('/', aux.getToken, aux.validateToken, (req, res, next) => {
 
 });
 
-purchaseRouter.get('/', (req, res, next) => {
-  const sql = 'SELECT * FROM Purchase';
+purchaseRouter.get('/', aux.getToken, aux.validateToken, (req, res, next) => {
+  if (req.accessType === 'Administrador') {
+    const sql = 'SELECT * FROM Purchase';
 
-  db.all(sql, (err, rows) => {
-    if (err) throw err;
+    db.all(sql, (err, rows) => {
+      if (err) throw err;
 
-    res.status(200).send({sales: rows});
-  });
+      res.status(200).send({sales: rows});
+    });
+  } else {
+    res.status(401).send();
+  }
 });
 
 module.exports = purchaseRouter;

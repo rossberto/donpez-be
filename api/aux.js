@@ -28,6 +28,7 @@ function validateToken(req, res, next) {
     if (accessLog && accessLog.active_session === 1) {
       req.accessId = accessLog.id;
       req.userId = accessLog.user_id;
+      req.accessType = accessLog.access_type;
       next();
     } else {
       res.status(401).send();
