@@ -10,7 +10,7 @@ let values;
 db.serialize(() => {
   values = {
     $username: 'admin',
-    $password: 'adminpass',
+    $password: 'admin',
     $usertype: 'Administrador'
   }
   db.run(insertSql, values, function(err) {
@@ -23,8 +23,8 @@ db.serialize(() => {
   });
 
   values = {
-    $username: 'cajero',
-    $password: 'cajeropass',
+    $username: 'caja',
+    $password: 'caja',
     $usertype: 'Cajero'
   }
   db.run(insertSql, values, function(err) {
