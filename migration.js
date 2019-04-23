@@ -35,12 +35,12 @@ db.serialize(() => {
   sql = 'CREATE TABLE Price (' +
         'id INTEGER PRIMARY KEY NOT NULL, ' +
         'date TEXT NOT NULL, ' +
-        'precio_pescado INTEGER NOT NULL, ' +
-        'precio_camaron INTEGER NOT NULL, ' +
-        'precio_bebidas INTEGER NOT NULL, ' +
-        'costo_pescado INTEGER, ' +
-        'costo_camaron INTEGER, ' +
-        'costo_bebidas INTEGER, ' +
+        'price_pescado INTEGER NOT NULL, ' +
+        'price_camaron INTEGER NOT NULL, ' +
+        'price_bebidas INTEGER NOT NULL, ' +
+        'cost_pescado INTEGER, ' +
+        'cost_camaron INTEGER, ' +
+        'cost_bebidas INTEGER, ' +
         'user_id INTEGER NOT NULL, ' +
         'FOREIGN KEY(user_id) REFERENCES User(id)' +
         ')';
