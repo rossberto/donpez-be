@@ -57,10 +57,13 @@ purchaseRouter.use('/', aux.validateAdmin);
 purchaseRouter.get('/', (req, res, next) => {
   const range = req.headers.range;
   console.log(range);
-  startDate = range.split('to')[0];
-  console.log(startDate);
-  const sql = 'SELECT * FROM Purchase';
+  startDate = new Date(range.split('to')[0]);
+  endDate = new Date(range.split('to')[1]);
+  const start = JSON.stringify(startDate);
+  const end = JSON.stringify(endDate);
 
+  const sql = 'SELECT * FROM Purchase ' +
+              `WHERE date BETWEEN ${start} AND ${end}`; //LIKE "${startDate}%"`;
   db.all(sql, (err, rows) => {
     if (err) throw err;
 
