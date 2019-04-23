@@ -26,6 +26,9 @@ purchaseRouter.post('/', (req, res, next) => {
     $userId: req.userId
   };
 
+  console.log(values.$date);
+  //console.log(JSON.parse(values));
+
   db.run(sql, values, function(err) {
     if (err) throw err;
 
@@ -44,17 +47,17 @@ purchaseRouter.post('/', (req, res, next) => {
 purchaseRouter.use('/', aux.validateAdmin);
 
 purchaseRouter.get('/', (req, res, next) => {
-  //if (req.accessType === 'Administrador') {
-    const sql = 'SELECT * FROM Purchase';
+  const range = req.headers.range;
+  console.log(range);
+  startDate = range.split('to')[0];
+  console.log(startDate);
+  const sql = 'SELECT * FROM Purchase';
 
-    db.all(sql, (err, rows) => {
-      if (err) throw err;
+  db.all(sql, (err, rows) => {
+    if (err) throw err;
 
-      res.status(200).send({sales: rows});
-    });
-  /*} else {
-    res.status(401).send();
-  }*/
+    res.status(200).send({sales: rows});
+  });
 });
 
 purchaseRouter.param('id', (req, res, next, id) => {

@@ -49,7 +49,7 @@ function registerLogin(req, res, next) {
               '($loginDate, $accessType, $userId, $token)';
   const date = new Date();
   const values = {
-    $loginDate: `${date}`,
+    $loginDate: JSON.stringify(date),
     $accessType: req.user.user_type,
     $userId: req.user.id,
     $token: req.token
@@ -77,7 +77,7 @@ loginRouter.put('/', aux.getToken, aux.validateToken, (req, res, next) => {
               `SET logout_date = $date, active_session = 0 ` +
               'WHERE id = $id';
   values = {
-    $date: `${date}`,
+    $date: JSON.stringify(date),
     $id: req.accessId
   };
 
