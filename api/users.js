@@ -24,7 +24,7 @@ function getUserValues(req, res, next) {
 usersRouter.get('/', (req, res, next) => {
   const sql = 'SELECT * FROM User';
   db.all(sql, (err, users) => {
-    if (err) throw err;
+    if (err) {next(err)}
 
     res.status(200).send({users: users});
   });
@@ -35,10 +35,10 @@ usersRouter.post('/', getUserValues, (req, res, next) => {
               '(username, password, user_type) VALUES ' +
               '($username, $password, $usertype)';
   db.run(sql, req.userValues, function(err) {
-    if (err) throw err;
+    if (err) {next(err)}
 
     db.get(`SELECT * FROM User WHERE id=${this.lastID}`, (err, user) => {
-      if (err) throw err;
+      if (err) {next(err)}
 
       res.status(201).send(user);
     });

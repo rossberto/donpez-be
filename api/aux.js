@@ -21,7 +21,7 @@ function validateToken(req, res, next) {
   const values = {$token: req.token};
 
   db.get(sql, values, (err, accessLog) => {
-    if (err) throw error;
+    if (err) {next(err)}
 
     console.log(accessLog);
 

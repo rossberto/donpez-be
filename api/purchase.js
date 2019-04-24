@@ -21,7 +21,7 @@ purchaseRouter.post('/', (req, res, next) => {
   let sql = 'SELECT * FROM Price ' +
                     'WHERE id=$priceId';
   db.get(sql, {$priceId: purchase.priceId}, (err, price) => {
-    if (err) throw err;
+    if (err) {next(err)}
 
     sql = 'INSERT INTO Purchase ' +
                 '(date, tacos_pescado, tacos_camaron, ' +
@@ -38,10 +38,10 @@ purchaseRouter.post('/', (req, res, next) => {
       $priceId: purchase.priceId
     };
     db.run(sql, values, function(err) {
-      if (err) throw err;
+      if (err) {next(err)}
 
       db.get(`SELECT * FROM Purchase WHERE id=${this.lastID}`, (err, row) => {
-        if (err) throw err;
+        if (err) {next(err)}
 
         res.status(201).send(row);
       });
@@ -65,7 +65,7 @@ purchaseRouter.get('/', (req, res, next) => {
   const sql = 'SELECT * FROM Purchase ' +
               `WHERE date BETWEEN ${start} AND ${end}`; //LIKE "${startDate}%"`;
   db.all(sql, (err, rows) => {
-    if (err) throw err;
+    if (err) {next(err)}
 
     res.status(200).send({sales: rows});
   });
@@ -74,7 +74,7 @@ purchaseRouter.get('/', (req, res, next) => {
 purchaseRouter.param('id', (req, res, next, id) => {
   const sql = `SELECT * FROM Purchase WHERE id=${id}`;
   db.get(sql, (err, purchase) => {
-    if (err) throw err;
+    if (err) {next(err)}
 
     if (purchase) {
       req.purchaseId = id;
@@ -89,7 +89,7 @@ purchaseRouter.delete('/:id', (req, res, next) => {
   const sql = 'DELETE FROM Purchase '+
               'WHERE id=$id';
   db.run(sql,{$id: req.purchaseId}, err => {
-    if (err) throw err;
+    if (err) {next(err)}
 
     res.status(204).send();
   });

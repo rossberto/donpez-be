@@ -16,7 +16,7 @@ function checkUserData(req, res, next) {
 
   const sql = `SELECT * FROM User WHERE username="${username}"`;
   db.get(sql, (err, user) => {
-    if (err) throw err;
+    if (err) {next(err)}
 
     if (user) {
       if (user.password === pwd) {
@@ -55,11 +55,11 @@ function registerLogin(req, res, next) {
     $token: req.token
   };
   db.run(sql, values, function(err) {
-    if (err) throw err;
+    if (err) {next(err)}
 
     sql = `SELECT * FROM AccessLog WHERE id=${this.lastID}`;
     db.get(sql, (err, access) => {
-      if (err) throw err;
+      if (err) {next(err)}
 
       res.access = access;
       next();
@@ -82,11 +82,11 @@ loginRouter.put('/', aux.getToken, aux.validateToken, (req, res, next) => {
   };
 
   db.run(sql, values, (err) => {
-    if (err) throw err;
+    if (err) {next(err)}
 
     sql = 'SELECT * FROM AccessLog WHERE id=$id';
     db.get(sql, {$id: req.accessId}, (err, accessLog) => {
-      if (err) throw err;
+      if (err) {next(err)}
 
       console.log(accessLog);
 
