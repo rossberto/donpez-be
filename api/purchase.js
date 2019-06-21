@@ -10,7 +10,8 @@ const aux = require('./aux.js');
 function calculateTotal(purchase, price) {
   return purchase.tacosPescado * price.price_pescado +
          purchase.tacosCamaron * price.price_camaron +
-         purchase.bebidas * price.price_bebidas;
+         purchase.bebidas * price.price_bebidas +
+         purchase.jugos * price.price_jugos;
 }
 
 purchaseRouter.use('/', aux.getToken, aux.validateToken);
@@ -25,14 +26,15 @@ purchaseRouter.post('/', (req, res, next) => {
 
     sql = 'INSERT INTO Purchase ' +
                 '(date, tacos_pescado, tacos_camaron, ' +
-                'bebidas, total, user_id, price_id) ' +
+                'bebidas, jugos, total, user_id, price_id) ' +
                 'VALUES ($date, $tacosPescado, $tacosCamaron, ' +
-                '$bebidas, $total, $userId, $priceId)';
+                '$bebidas, $jugos, $total, $userId, $priceId)';
     const values = {
       $date: purchase.date,
       $tacosPescado: purchase.tacosPescado,
       $tacosCamaron: purchase.tacosCamaron,
       $bebidas: purchase.bebidas,
+      $jugos: purchase.jugos,
       $total: calculateTotal(purchase, price),
       $userId: req.userId,
       $priceId: purchase.priceId
