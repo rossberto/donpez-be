@@ -11,9 +11,9 @@ let values;
 db.serialize(() => {
   values = {
     $date: '2019-04-18',
-    $pricePescado: 20,
-    $priceCamaron: 24,
-    $priceBebidas: 8,
+    $pricePescado: 15,
+    $priceCamaron: 20,
+    $priceBebidas: 10,
     $userId: 0
   }
   db.run(insertSql, values, function(err) {
@@ -27,9 +27,9 @@ db.serialize(() => {
 
   values = {
     $date: '2019-04-22',
-    $pricePescado: 22,
-    $priceCamaron: 26,
-    $priceBebidas: 12,
+    $pricePescado: 15,
+    $priceCamaron: 20,
+    $priceBebidas: 10,
     $userId: 0
   }
   db.run(insertSql, values, function(err) {
